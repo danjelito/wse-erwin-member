@@ -56,6 +56,7 @@ income_cat = pd.CategoricalDtype(
 
 
 def get_membership_code(series):
+    """Get membership code."""
     membership_code = pd.Series(series).str.extract("(\[.+\])")
     membership_code = (
         membership_code.iloc[:, 0]  # convert DF to series
@@ -69,13 +70,14 @@ def get_membership_code(series):
 
 
 def get_membership_duration(series):
+    """Get membership duration."""
     membership_code = pd.Series(series).str.extract("(\[.+\])")
     membership_duration = (
         membership_code.iloc[:, 0]  # convert DF to series
         .str.replace("[", "", regex=False)
         .str.replace("]", "", regex=False)
         .str.replace(".", " ", regex=False)
-        .str.extract("(\d+)")
+        .str.extract("(\d+)")  # extract digit
     )
     return membership_duration
 
