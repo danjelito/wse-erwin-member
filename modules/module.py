@@ -55,6 +55,31 @@ income_cat = pd.CategoricalDtype(
 )
 
 
+def get_membership_code(series):
+    membership_code = pd.Series(series).str.extract("(\[.+\])")
+    membership_code = (
+        membership_code.iloc[:, 0]  # convert DF to series
+        .str.replace("[", "", regex=False)
+        .str.replace("]", "", regex=False)
+        .str.replace(".", " ", regex=False)
+        .str.replace("(\d+$)", "", regex=True)
+        .str.strip()
+    )
+    return membership_code
+
+
+def get_membership_duration(series):
+    membership_code = pd.Series(series).str.extract("(\[.+\])")
+    membership_duration = (
+        membership_code.iloc[:, 0]  # convert DF to series
+        .str.replace("[", "", regex=False)
+        .str.replace("]", "", regex=False)
+        .str.replace(".", " ", regex=False)
+        .str.extract("(\d+)")
+    )
+    return membership_duration
+
+
 def is_active(
     df: pd.DataFrame,
     start_date_col: pd.Timestamp,
