@@ -1,5 +1,7 @@
 # Erwin Member Processor
 
+This is a program to clean the member data from Erwin.
+
 ## Data Source:
 
 **Erwin Member Data**
@@ -27,3 +29,4 @@ The output of this program is used for:
 
 1. Raw data for Experience Management Report - Member Activity Diagram (there are other membership population there).
 2. [Member Population Report](https://docs.google.com/spreadsheets/d/1oIq_27yHAZ8WB5F3cKg-tfoBpT7woDqh/edit#gid=1001742099)
+3. Member Population per Center Report

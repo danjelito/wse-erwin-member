@@ -43,6 +43,13 @@ center_map = {
     "INDIES": "INDIES",
     np.nan: "NONE",
 }
+jkt_1 = ["PP", "SDC", "KG"]
+jkt_2 = ["GC", "LW", "BSD", "TBS", "CP"]
+jkt_3 = ["KK", "CBB", "SMB"]
+bdg = ["DG"]
+sby = ["PKW"]
+centers = jkt_1 + jkt_2 + jkt_3 + bdg + sby
+
 income_cat = pd.CategoricalDtype(
     [
         "Below Rp 10.000.000",
@@ -124,3 +131,63 @@ def is_active(
     )
     choices = [True, True, True, True, False]
     return np.select(conditions, choices, default=False)
+
+
+def clean_center(df_: pd.DataFrame) -> pd.Series:
+    """Get center.
+
+    :param pd.DataFrame df_: DF.
+    :return pd.Series: Center.
+    """
+
+    conditions = [
+        df_["is_cpt"] == True, 
+        df_["core_product"] == "Go", 
+        True,
+    ]
+    choices = [
+        "Corporate",
+        "Online Center",
+        df_["center"].str.upper().map(center_map),
+    ]
+    center = np.select(conditions, choices, "ERROR")
+    assert (center == "ERROR").sum() == 0, "Some centers are unmapped"
+    return center
+
+
+def clean_area(df_: pd.DataFrame) -> pd.Series:
+    """Get area from center.
+
+    :param pd.DataFrame df_: DF.
+    :return pd.Series: area.
+    """
+
+    conditions = [
+        df_["center"].isna(),
+        df_["center"] == "Online Center", 
+        df_["center"] == "Corporate", 
+        df_["center"].isin(jkt_1),
+        df_["center"].isin(jkt_2),
+        df_["center"].isin(jkt_3),
+        df_["center"].isin(bdg),
+        df_["center"].isin(sby),
+        df_["center"].isin([
+            "NST", 
+            "HO", 
+            "ID",
+        ]),
+    ]
+    choices = [
+        np.nan, 
+        "Online Center", 
+        "Corporate", 
+        "JKT 1",
+        "JKT 2",
+        "JKT 3",
+        "BDG",
+        "SBY",
+        "Other",
+    ]
+    area = np.select(conditions, choices, default="ERROR")
+    assert (area == "ERROR").sum() == 0, "Some centers are unmapped to area"
+    return area
