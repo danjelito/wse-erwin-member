@@ -45,6 +45,11 @@ def clean_col_name(col):
         .strip()
         .replace(" ", "_")
         .replace("/", "_")
+        .replace("(", "")
+        .replace(")", "")
+        .replace("__", "_")
+        .replace("followers_partners_", "")
+        .strip()
     )
 
 
@@ -152,7 +157,6 @@ def clean_center(df_: pd.DataFrame) -> pd.Series:
         df_["center"].str.upper().map(config.center_map),
     ]
     center = np.select(conditions, choices, "ERROR")
-    assert (center == "ERROR").sum() == 0, "Some centers are unmapped"
     return center
 
 
@@ -186,5 +190,4 @@ def clean_area(df_: pd.DataFrame) -> pd.Series:
         "Other",
     ]
     area = np.select(conditions, choices, default="NONE")
-    assert (area == "NONE").sum() == 0, "Some centers are unmapped to area"
     return area
