@@ -72,3 +72,37 @@ def test_all_membership_mapped(df_clean):
                 continue
             unmapped.append(code)
     assert not unmapped, "Some membership are not mapped."
+
+
+def test_cpt_is_flagged(df_clean):
+    wrong = (
+        df_clean.loc[
+            df_clean["product"].str.lower().str.contains("cpt|corporate|corp"), "is_cpt"
+        ]
+        != True
+    ).sum()
+    assert not wrong, "some cpt members are not correctly flagged"
+
+
+def test_cpt_in_cpt_center(df_clean):
+    assert not (
+        df_clean.loc[df_clean["is_cpt"] == True, "center"] != "Corporate"
+    ).sum(), "some cpt members are registered outside cpt center"
+
+
+def test_cpt_in_cpt_area(df_clean):
+    assert not (
+        df_clean.loc[df_clean["is_cpt"] == True, "area"] != "Corporate"
+    ).sum(), "some cpt members are registered outside cpt area"
+
+
+def test_noncpt_in_noncpt_center(df_clean):
+    assert not (
+        df_clean.loc[df_clean["is_cpt"] != True, "center"] == "Corporate"
+    ).sum(), "some noncpt members are registered in cpt center"
+
+
+def test_noncpt_in_noncpt_area(df_clean):
+    assert not (
+        df_clean.loc[df_clean["is_cpt"] != True, "area"] == "Corporate"
+    ).sum(), "some noncpt members are registered in cpt area"

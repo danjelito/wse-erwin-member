@@ -23,6 +23,10 @@ to_drop = [
     "partner_street",
     "partner_street2",
     "partner_age",
+    "dob2",
+    "job1",
+    "job2",
+    "name",
 ]
 income_cat = pd.CategoricalDtype(
     [
@@ -60,12 +64,11 @@ def clean_job(df_):
         df_["job1"].str.lower().str.replace("[^\w\s]", "", regex=True).str.strip(),
     )
 
+
 def get_age(df_):
     return (
-            (df_["start_date"] - df_["dob"])
-            .div(pd.Timedelta("365 days"))
-            .apply(np.floor)
-        )    
+        (df_["start_date"] - df_["dob"]).div(pd.Timedelta("365 days")).apply(np.floor)
+    )
 
 
 def get_membership_code(series):
@@ -191,3 +194,11 @@ def clean_area(df_: pd.DataFrame) -> pd.Series:
     ]
     area = np.select(conditions, choices, default="NONE")
     return area
+
+
+def assert_cpt_catched(df):
+    return np.where(
+        df["product"].str.lower().str.contains("cpt|corporate|corp", regex=True),
+        True,
+        df["is_cpt"],
+    )
