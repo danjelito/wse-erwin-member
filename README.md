@@ -28,5 +28,10 @@ This is a program to clean the member data from Erwin.
 The output of this program is used for:
 
 1. Raw data for Experience Management Report - Member Activity Diagram (there are other membership population there).
-2. [Member Population Report](https://docs.google.com/spreadsheets/d/1oIq_27yHAZ8WB5F3cKg-tfoBpT7woDqh/edit#gid=1001742099)
-3. Member Population per Center Report
+2. [Member Population Report](https://docs.google.com/spreadsheets/d/1oIq_27yHAZ8WB5F3cKg-tfoBpT7woDqh/edit#gid=1001742099).
+3. Member Population per Center Report (in Experience Management Report).
+
+## Todo: 
+1. Create config.
+2. Create secret env.
+3. Create tests.

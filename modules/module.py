@@ -35,7 +35,7 @@ center_map = {
     "DAGO": "DG",
     "PAKUWON": "PKW",
     "CENTRAL PARK": "CP",
-    "BEKASI": "BSD",
+    "BEKASI": "SMB",
     "NATIONAL SALES TEAM": "NST",
     "BSD CITY": "BSD",
     "CIBUBUR": "CBB",
