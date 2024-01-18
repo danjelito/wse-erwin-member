@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import config
 
 to_rename = {
     "date_of_birth": "dob",
@@ -24,32 +24,6 @@ to_drop = [
     "partner_street2",
     "partner_age",
 ]
-center_map = {
-    "HEAD OFFICE": "HO",
-    "KOTA KASABLANKA": "KK",
-    "SEDAYU CITY": "SDC",
-    "PACIFIC PLACE": "PP",
-    "INDONESIA": "ID",
-    "GANDARIA CITY": "GC",
-    "LIVING WORLD": "LW",
-    "DAGO": "DG",
-    "PAKUWON": "PKW",
-    "CENTRAL PARK": "CP",
-    "BEKASI": "SMB",
-    "NATIONAL SALES TEAM": "NST",
-    "BSD CITY": "BSD",
-    "CIBUBUR": "CBB",
-    "SIMATUPANG": "TBS",
-    "INDIES": "INDIES",
-    np.nan: "NONE",
-}
-jkt_1 = ["PP", "SDC", "KG"]
-jkt_2 = ["GC", "LW", "BSD", "TBS", "CP"]
-jkt_3 = ["KK", "CBB", "SMB"]
-bdg = ["DG"]
-sby = ["PKW"]
-centers = jkt_1 + jkt_2 + jkt_3 + bdg + sby
-
 income_cat = pd.CategoricalDtype(
     [
         "Below Rp 10.000.000",
@@ -60,6 +34,33 @@ income_cat = pd.CategoricalDtype(
     ],
     ordered=True,
 )
+
+
+def clean_col_name(col):
+    return (
+        col.lower()
+        .replace("/display name", "")
+        .replace("/month", "")
+        .replace("position", "")
+        .strip()
+        .replace(" ", "_")
+        .replace("/", "_")
+    )
+
+
+def clean_job(df_):
+    return np.where(
+        df_["job1"].isna(),
+        df_["job2"].str.lower().str.replace("[^\w\s]", "", regex=True).str.strip(),
+        df_["job1"].str.lower().str.replace("[^\w\s]", "", regex=True).str.strip(),
+    )
+
+def get_age(df_):
+    return (
+            (df_["start_date"] - df_["dob"])
+            .div(pd.Timedelta("365 days"))
+            .apply(np.floor)
+        )    
 
 
 def get_membership_code(series):
@@ -141,14 +142,14 @@ def clean_center(df_: pd.DataFrame) -> pd.Series:
     """
 
     conditions = [
-        df_["is_cpt"] == True, 
-        df_["core_product"] == "Go", 
+        df_["is_cpt"] == True,
+        df_["core_product"] == "Go",
         True,
     ]
     choices = [
         "Corporate",
         "Online Center",
-        df_["center"].str.upper().map(center_map),
+        df_["center"].str.upper().map(config.center_map),
     ]
     center = np.select(conditions, choices, "ERROR")
     assert (center == "ERROR").sum() == 0, "Some centers are unmapped"
@@ -164,23 +165,19 @@ def clean_area(df_: pd.DataFrame) -> pd.Series:
 
     conditions = [
         df_["center"].isna(),
-        df_["center"] == "Online Center", 
-        df_["center"] == "Corporate", 
-        df_["center"].isin(jkt_1),
-        df_["center"].isin(jkt_2),
-        df_["center"].isin(jkt_3),
-        df_["center"].isin(bdg),
-        df_["center"].isin(sby),
-        df_["center"].isin([
-            "NST", 
-            "HO", 
-            "ID",
-        ]),
+        df_["center"] == "Online Center",
+        df_["center"] == "Corporate",
+        df_["center"].isin(config.jkt_1),
+        df_["center"].isin(config.jkt_2),
+        df_["center"].isin(config.jkt_3),
+        df_["center"].isin(config.bdg),
+        df_["center"].isin(config.sby),
+        df_["center"].isin(config.map_areas.get("Other")),
     ]
     choices = [
-        np.nan, 
-        "Online Center", 
-        "Corporate", 
+        "NONE",
+        "Online Center",
+        "Corporate",
         "JKT 1",
         "JKT 2",
         "JKT 3",
@@ -188,6 +185,6 @@ def clean_area(df_: pd.DataFrame) -> pd.Series:
         "SBY",
         "Other",
     ]
-    area = np.select(conditions, choices, default="ERROR")
-    assert (area == "ERROR").sum() == 0, "Some centers are unmapped to area"
+    area = np.select(conditions, choices, default="NONE")
+    assert (area == "NONE").sum() == 0, "Some centers are unmapped to area"
     return area
