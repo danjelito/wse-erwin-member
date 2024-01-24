@@ -20,7 +20,6 @@ to_rename = {
 to_drop = [
     "external_id",
     "partner_industry",
-    "partner_street",
     "partner_street2",
     "partner_age",
     "dob2",
@@ -46,6 +45,7 @@ def clean_col_name(col):
         .replace("/display name", "")
         .replace("/month", "")
         .replace("position", "")
+        .replace("?", "")
         .strip()
         .replace(" ", "_")
         .replace("/", "_")
