@@ -1,6 +1,6 @@
 import numpy as np
 
-path_raw_file = "input/2024-01-24.xls"
+path_raw_file = "input/2024-02-06.xls"
 
 # map centre here
 # note: update if there are new centers
