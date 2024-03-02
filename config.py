@@ -1,6 +1,6 @@
 import numpy as np
 
-path_raw_file = "input/2024-02-06.xls"
+path_raw_file = "input/2024-03-02.xls"
 
 # map centre here
 # note: update if there are new centers
@@ -16,11 +16,13 @@ center_map = {
     "PAKUWON": "PKW",
     "CENTRAL PARK": "CP",
     "BEKASI": "SMB",
-    "NATIONAL SALES TEAM": "NST",
     "BSD CITY": "BSD",
     "CIBUBUR": "CBB",
     "SIMATUPANG": "TBS",
     "INDIES": "INDIES",
+    "NATIONAL SALES TEAM": "NST",
+    "REGIONAL SALES TEAM": "RST",
+    "GO CENTER": "Online Center",
 }
 
 jkt_1 = ["PP", "SDC", "KG"]
@@ -36,7 +38,7 @@ map_areas = {
     "JKT 3": jkt_3,
     "BDG": bdg,
     "SBY": sby,
-    "Other": ["HO", "Street Talk", "ID", "NST", "INDIES"],
+    "Other": ["HO", "Street Talk", "ID", "NST", "INDIES", "RST"],
     "Corporate": ["Corporate"],
     "Online Center": ["Online Center"],
 }

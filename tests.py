@@ -15,7 +15,7 @@ def test_all_centers_mapped(df_ori):
             unmapped.append(c)
     assert (
         not unmapped
-    ), "There are unmapped centers. Map this inside modules/center_map."
+    ), f"There are unmapped centers: {unmapped}. Map this inside modules/center_map."
 
 
 def test_all_centers_are_filled(df_clean):

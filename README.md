@@ -14,7 +14,7 @@ This is a program to clean the member data from Erwin.
 
 ## How to Use:
 
-1. Export the data from Erwin - Memberships with export template `Repurcahase Rate & Member Pop`.
+1. Export the data from Erwin - Memberships with export template `Repurcahase Rate & Member Pop` **as xlsx**.
 2. Put the file inside `input` folder, change the filename to exported date in `config.py`.
 3. Make sure all membership codes are mapped in `input/membership_mapping.xlsx`
 4. Process & clean the data using `main.ipynb`
