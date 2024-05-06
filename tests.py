@@ -71,7 +71,7 @@ def test_all_membership_mapped(df_clean):
             if code == np.NaN:
                 continue
             unmapped.append(code)
-    assert not unmapped, "Some membership are not mapped."
+    assert not unmapped, f"Some membership are not mapped: {unmapped}. Map them in input/membership_mapping.xlsx"
 
 
 def test_cpt_is_flagged(df_clean):
