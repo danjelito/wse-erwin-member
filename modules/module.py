@@ -22,6 +22,8 @@ to_drop = [
     "partner_industry",
     "partner_street2",
     "partner_age",
+    "partner_hobby",
+    "partner_interest",
     "dob2",
     "job1",
     "job2",
@@ -65,10 +67,54 @@ def clean_job(df_):
     )
 
 
+def group_job(job_col):
+    """Group job to entry level, middle level etc."""
+
+    mask_staff = "staff|karyawan|employee|karyawan swasta|pekerja professional|pekerja profesional|associate|engineer|marketing|finance|intern|flight attendant|accounting|graphic designer|analyst|nurse|legal|secretary|programmer|sales|hr|civil servant|pr|tax officer|management trainee|content creator|researcher|designer|accountant|research assistant|web developer|customer support|risk management|photographer|human resources|business development|journalist|pharmacist|admin|purchaser|human resource|pengelola barang milik negara|pengawas junior|officer"
+    mask_manager = "manager|director|supervisor|it|swasta|ceo|direktur|head|vp|gm"
+    mask_other = "doctor|pns|consultant|teacher|dosen|lecturer|government servant|lawyer|pediatrician|dentist|police officer|dokter"
+    mask_student = "student|sekolah|siswa|pelajar|high schooler|highschooler|stude|fresh grad"
+    mask_college = "maha|mhs|college"
+    mask_enterpreneur = "enterpreneur|businessman|businesswoman|owner|fresh graduate|pengusaha|entrepreneur|selfemployed|online shop|entrepeneur|wirausaha|bussiness woman"
+    mask_not_working = "freshgraduate|tidak bekerja|job seeker|belum bekerja|freshgrad|freash graduate|graduated|not yet"
+    mask_wife = "housewife|ibu rumah|house wife"
+    mask_freelance = "freelance|free lance"
+
+    conditions = [
+        (job_col.str.lower().str.contains(mask_staff, na=False)),
+        (job_col.str.lower().str.contains(mask_manager, na=False)),
+        (job_col.str.lower().str.contains(mask_other, na=False)),
+        (job_col.str.lower().str.contains(mask_student, na=False)),
+        (job_col.str.lower().str.contains(mask_college, na=False)),
+        (job_col.str.lower().str.contains(mask_not_working, na=False)),
+        (job_col.str.lower().str.contains(mask_enterpreneur, na=False)),
+        (job_col.str.lower().str.contains(mask_wife, na=False)),
+        (job_col.str.lower().str.contains(mask_freelance, na=False)),
+    ]
+    choices = [
+        "Employee - Entry Level",
+        "Employee - Middle to Upper Level",
+        "Employee - Other",
+        "Student",
+        "College Student",
+        "Not Working",
+        "Enterpreneur",
+        "Housewife",
+        "Freelance",
+    ]
+    return np.select(conditions, choices, default="Unidentified")
+
+
+def clean_gender(gender_col):
+    return gender_col.replace(False, "Not Specified").fillna("Not Specified")
+
+
 def get_age(df_):
-    return (
+    """Get age between DOB and start_date, cast to np.nan if < 15 YO or > 65 YO."""
+    result = (
         (df_["start_date"] - df_["dob"]).div(pd.Timedelta("365 days")).apply(np.floor)
     )
+    return np.where(((result < 15) | (result > 65)), np.nan, result)
 
 
 def get_membership_code(series):
@@ -202,3 +248,28 @@ def assert_cpt_catched(df):
         True,
         df["is_cpt"],
     )
+
+
+def create_region(city_col, street_col):
+    # mask
+    mask_jabo = "jakarta|jkt|jkarta|jakut|jaksel|jakbar|jaktim|bogor|bgor|bogr|depok|dpk|tangerang|tgrg|bekasi|bks|kuningan|scbd|karawang|setiabudi|tanggerang|cikarang|cakung|tebet|bintaro|gunung putri|mampang|cilandak|tanah abang|pasar minggu|priok|priuk|sudirman|purwakarta|cinere|rawalumbu|kemayoran|serpong|duren sawit|jatinegara|cengkareng|bsd|kemang|pasar rebo|jakpus|matraman|cilincing|senayan|ciputat|cibitung|kebayoran|pancoran|pulogadung|tanjung duren|tangeran|kramat jati|petamburan|cibinong|koja|pondok gede|kebon jeruk|kelapa gading|tambora|pondok aren|menteng|pulo gadung"
+    mask_sby = "surabaya|sby"
+    mask_bdg = "bandung|bdg"
+    mask_other = "banten|serang|cilegon|yogyakarta|yogya|jogja|semarang|cibubur|jawa|sidoarjo|malang|cimahi|sukabumi|cianjur|cirebon|gresik|pamulang|mojokerto|banyuwangi|kebumen|lebak bulus|garut|sleman|sragen|subang|tegal|tasikmalaya|klaten|madiun|solo|magelang|rembang|indramayu|purwokerto|pandeglang|blora|purworejo|batang|boyolali|probolinggo|karanganyar|salatiga|jepara|demak|wonosobo|banjar|cilacap|banyumas|blitar|tuban|tulungagung|jember|jombang|surakarta|solo"
+    mask_outside = "sumatra|sumatera|sulawesi|medan|batam|bali|riau|pekanbaru|lampung|palembang|kalimantan|jambi|banjarmasin|samarinda|singapore|pekanbaru|palangkaraya|padang|papua|bengkulu|pontianak|makassar|makasar|manado|aceh|deli|palu|denpasar|pematangsiantar|gowa|gorontalo|malaysia|ntb|pekan baru|jayapura|maluku|ambon|korea|karimun|samosir|bone|sulsel|denppasar|bolaang|flores|ogan ilir|bangka|kupang|bukittinggi|qatar|nusa tenggara|gianyar"
+
+    conditions = [
+        (city_col.str.lower().str.contains(mask_jabo, na=False)) | (street_col.str.lower().str.contains(mask_jabo, na=False)),
+        (city_col.str.lower().str.contains(mask_sby, na=False)) | (street_col.str.lower().str.contains(mask_sby, na=False)),
+        (city_col.str.lower().str.contains(mask_bdg, na=False)) | (street_col.str.lower().str.contains(mask_bdg, na=False)),
+        (city_col.str.lower().str.contains(mask_other, na=False)) | (street_col.str.lower().str.contains(mask_other, na=False)),
+        (city_col.str.lower().str.contains(mask_outside,na=False,)) | (street_col.str.lower().str.contains(mask_outside,na=False,)),
+    ]
+    choices = [
+        "Jabodetabek",
+        "Surabaya",
+        "Bandung",
+        "Other Java Region",
+        "Outside Java",
+    ]
+    return np.select(conditions, choices, default="Unidentified")
