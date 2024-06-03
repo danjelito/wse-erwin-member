@@ -1,6 +1,6 @@
 import numpy as np
 
-path_raw_file = "input/2024-05-06.csv"
+path_raw_file = "input/2024-06-03.csv"
 
 # map centre here
 # note: update if there are new centers
@@ -25,6 +25,7 @@ center_map = {
     "REGIONAL SALES TEAM": "RST",
     "GO CENTER": "Online Center",
     "CURIOO": "Curioo",
+    "CURIOO BINTARO": "Curioo",
 }
 
 jkt_1 = ["PP", "SDC", "KG", "CKR"]
