@@ -7,7 +7,7 @@ import config
 
 
 def test_all_centers_mapped(df_ori):
-    center_in_df = df_ori["Partner/Branch/Display Name"].unique()
+    center_in_df = df_ori["Home Center/Display Name"].unique()
 
     unmapped = []
     for c in center_in_df:

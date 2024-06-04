@@ -8,7 +8,7 @@ to_rename = {
     "to": "end_date",
     "fully_paid_date": "fp_date",
     "membership": "product",
-    "partner_branch": "center",
+    "home_center": "center",
     "partner_date_of_birth": "dob2",
     "partner_city": "city",
     "partner_gender": "gender",
@@ -188,22 +188,19 @@ def is_active(
     return np.select(conditions, choices, default=False)
 
 
-def clean_center(df_: pd.DataFrame) -> pd.Series:
+def clean_center(df_: pd.DataFrame, center_col: str, is_cpt_col: str, core_product_col: str) -> pd.Series:
     """Get center.
-
-    :param pd.DataFrame df_: DF.
-    :return pd.Series: Center.
     """
 
     conditions = [
-        df_["is_cpt"] == True,
-        df_["core_product"] == "Go",
+        df_[is_cpt_col] == True,
+        df_[core_product_col] == "Go",
         True,
     ]
     choices = [
         "Corporate",
         "Online Center",
-        df_["center"].str.upper().map(config.center_map),
+        df_[center_col].str.upper().map(config.center_map),
     ]
     center = np.select(conditions, choices, "ERROR")
     return center
