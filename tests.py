@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from itertools import chain
 
 import config
 
@@ -18,27 +19,25 @@ def test_all_centers_mapped(df_ori):
     ), f"There are unmapped centers: {unmapped}. Map this inside modules/center_map."
 
 
-def test_all_centers_are_filled(df_clean):
+def test_all_centers_are_correct(df_clean):
     """
     All centers should be filled with no blank.
     """
 
-    from itertools import chain
-
     centers_nested = list(config.map_areas.values())
     centers = list(chain(*centers_nested))
 
-    unmapped = set(df_clean["center"].unique()) - set(centers)
+    unmapped = set(df_clean["center"].dropna().unique()) - set(centers)
     assert (
         not unmapped
     ), f"test_all_centers_are_filled failed, {unmapped} is incorrectly mapped"
 
 
-def test_all_areas_are_filled(df_clean):
+def test_all_areas_are_correct(df_clean):
     """
     All areas should be filled with no blank.
     """
-    unmapped = set(df_clean["area"].unique()) - set(config.map_areas.keys())
+    unmapped = set(df_clean["area"].loc[df_clean["area"] != "NONE"].unique()) - set(config.map_areas.keys())
     assert (
         not unmapped
     ), f"test_all_areas_are_filled failed, {unmapped} is incorrectly mapped"
@@ -58,6 +57,17 @@ def test_all_memberships_are_filled(df_clean):
     ], "test_all_memberships_are_filled failed"
 
 
+def test_na_center_low(center_series, threshold=0.01):
+    na_percentage = center_series.isna().sum() / len(center_series)
+    assert na_percentage <= threshold, f"Null center is {na_percentage: .5%} which is more than {threshold: .5%}."
+
+
+def test_na_area_low(area_series, threshold=0.01):
+    na_percentage = (area_series == "NONE").sum() / len(area_series)
+    assert na_percentage <= threshold, f"Null area is {na_percentage: .5%} which is more than {threshold: .5%}."
+
+
+
 def test_all_membership_mapped(df_clean):
     # assert that all membership codes has been accounted
     codes = df_clean["membership_code"].unique()
@@ -71,7 +81,9 @@ def test_all_membership_mapped(df_clean):
             if code == np.NaN:
                 continue
             unmapped.append(code)
-    assert not unmapped, f"Some membership are not mapped: {unmapped}. Map them in input/membership_mapping.xlsx"
+    assert (
+        not unmapped
+    ), f"Some membership are not mapped: {unmapped}. Map them in input/membership_mapping.xlsx"
 
 
 def test_cpt_is_flagged(df_clean):

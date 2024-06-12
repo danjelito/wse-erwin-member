@@ -34,5 +34,6 @@ The output of this program is used for:
 ## Todo:
 
 1. Create secret env.
-2. Remove member with no name, email and phone.
-3. Remove member too old.
+2. ~~Remove member with no name, email and phone.~~
+3. ~~Remove member too old.~~
+4. ~~Check if null center is less than 1%. If yes, bypass the test.~~

@@ -28,6 +28,7 @@ to_drop = [
     "job1",
     "job2",
     "name",
+    "index",
 ]
 income_cat = pd.CategoricalDtype(
     [
